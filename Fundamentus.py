@@ -638,9 +638,6 @@ class Fundamentus():
         :raises ConnectionError: erro de conexão caso a página retorne erro 404
         """        
 
-        if not os.path.exists('D:\\Data\\SP_Bovespa\\Fundamentus\\Dividendos'):
-            os.mkdir('D:\\Data\\SP_Bovespa\\Fundamentus\\Dividendos')
-
         for ticker in tickers:
 
             #A url que você quer acesssar
@@ -653,7 +650,7 @@ class Fundamentus():
             }
             #Juntamos tudo com a requests
             r = requests.get(url, headers=header)
-
+            
             if r.status_code == 404:
                 raise ConnectionError('Failed to connect to website, check internet connection or if https://www.fundamentus.com.br/detalhes.php is a valid website')
 
@@ -662,11 +659,12 @@ class Fundamentus():
             except ValueError: continue
 
             df = dfs[0]
+            
 
             df.rename({'Data':'Data Com'}, axis=1,inplace=True)
 
             df = df.set_index('Data Com', drop=True)
-            df.to_csv(f'Fundamentus\\Dividendos\\{ticker}.csv')
+            return df
                 
     def get_fundamentals(self,tickers):
         from NoCaptcha.NoCaptcha import NoCaptchaGPU as NC
@@ -763,12 +761,15 @@ class Fundamentus():
         self.__separate_category(tickers)
 
 if __name__ == '__main__':
+
+    ticker = 'B3SA3'
     
-    tickers = list(Fundamentus().get_tickers()['Papel'])
+    '''tickers = list(Fundamentus().get_tickers()['Papel'])
     tickers_letters = [c[:4] for c in tickers]
     ticker_dict = dict(zip(tickers_letters,tickers))
-    new_tickers = list(ticker_dict.values())
-    Fundamentus().get_fundamentals(new_tickers)
+    new_tickers = list(ticker_dict.values())'''
+    data = Fundamentus().get_dividends([ticker])
+    print(data)
 
    
 
