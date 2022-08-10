@@ -630,7 +630,7 @@ class Fundamentus():
 
         return dictionary
 
-    def get_dividends(self, tickers):
+    def get_dividends(self, ticker):
         """Pega informações sobre os dividendos de uma empresa através de requests, se ela tiver dividendos
 
         :param tickers: lista de pregões
@@ -638,33 +638,33 @@ class Fundamentus():
         :raises ConnectionError: erro de conexão caso a página retorne erro 404
         """        
 
-        for ticker in tickers:
+        
 
-            #A url que você quer acesssar
-            url = f"https://www.fundamentus.com.br/proventos.php?papel={ticker}"
+        #A url que você quer acesssar
+        url = f"https://www.fundamentus.com.br/proventos.php?papel={ticker}"
 
-            #Informações para fingir ser um navegador
-            header = {
-            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.75 Safari/537.36",
-            "X-Requested-With": "XMLHttpRequest"
-            }
-            #Juntamos tudo com a requests
-            r = requests.get(url, headers=header)
-            
-            if r.status_code == 404:
-                raise ConnectionError('Failed to connect to website, check internet connection or if https://www.fundamentus.com.br/detalhes.php is a valid website')
+        #Informações para fingir ser um navegador
+        header = {
+        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.75 Safari/537.36",
+        "X-Requested-With": "XMLHttpRequest"
+        }
+        #Juntamos tudo com a requests
+        r = requests.get(url, headers=header)
+        
+        if r.status_code == 404:
+            raise ConnectionError('Failed to connect to website, check internet connection or if https://www.fundamentus.com.br/detalhes.php is a valid website')
 
-            #E finalmente usamos a função read_html do pandas
-            try: dfs = pd.read_html(r.text, decimal=',', thousands='.')
-            except ValueError: continue
+        #E finalmente usamos a função read_html do pandas
+        try: dfs = pd.read_html(r.text, decimal=',', thousands='.')
+        except ValueError: pass
 
-            df = dfs[0]
-            
+        df = dfs[0]
+        
 
-            df.rename({'Data':'Data Com'}, axis=1,inplace=True)
+        df.rename({'Data':'Data Com'}, axis=1,inplace=True)
 
-            df = df.set_index('Data Com', drop=True)
-            return df
+        df = df.set_index('Data Com', drop=True)
+        return df
                 
     def get_fundamentals(self,tickers):
         from NoCaptcha.NoCaptcha import NoCaptchaGPU as NC
@@ -768,7 +768,7 @@ if __name__ == '__main__':
     tickers_letters = [c[:4] for c in tickers]
     ticker_dict = dict(zip(tickers_letters,tickers))
     new_tickers = list(ticker_dict.values())'''
-    data = Fundamentus().get_dividends([ticker])
+    data = Fundamentus().get_dividends(ticker)
     print(data)
 
    
