@@ -247,73 +247,6 @@ class Fundamentus():
         :type tickers: list
         """        
         
-        
-        #Dicionário para renomear colunas com nomes repitidos
-        rename_columns = {
-
-            'Estoques':'Estoques_AtivoCirculante',
-            'Estoques.1' : 'Estoques_AtivoRealizávelALongoPrazo',
-            'Provisões': 'Provisões_PassivoCirculante',
-            'Provisões.1': 'Provisões_PassivoNãoCirculante',
-            'Adiantamento para Futuro Aumento Capital':'AdiantamentoParaFuturoAumentoCapital_PassivoNãoCirculante',
-            'Adiantamento para Futuro Aumento Capital.1':'Adiantamento para Futuro Aumento Capital_Patrimônio_Líquido',
-            'Despesas Antecipadas':'DespesasAntecipadas_AtivoCirculante',
-            'Despesas Antecipadas.1':'DespesasAntecipadas_AtivoRealizávelALongoPrazo',
-            'Contas a Receber':'Contas a Receber_AtivoCirculante',
-            'Contas a Receber.1':'Contas a Receber_AtivoRealizávelALongoPrazo',
-            'Empréstimos e Financiamentos':'EmpréstimosEFinanciamentos_PassivoCirculante',
-            'Empréstimos e Financiamentos.1':'Empréstimos e Financiamentos_PassivoNãoCirculante',
-            'Tributos Diferidos':'Tributos Diferidos_AtivoRealizávelALongoPrazo',
-            'Tributos Diferidos.1':'Tributos Diferidos_PassivoNãoCirculante',
-            'Passivos com Partes Relacionadas':'Passivos com Partes Relacionadas_PassivoCirculante',
-            'Passivos com Partes Relacionadas.1':'Passivos com Partes Relacionadas_PassivoNãoCirculante',
-            'Outros':'Outros_PassivoCirculante',
-            'Outros.1':'Outros_PassivoNãoCirculante',
-            'Ativos Biológicos':'Ativos Biológicos_AtivoCirculante',
-            'Ativos Biológicos.1':'Ativos Biológicos_AtivoRealizávelALongoPrazo',
-            'Aplicações Interfinanceiras de Liquidez':'Aplicações Interfinanceiras de Liquidez_AtivoCirculante',
-            'Aplicações Interfinanceiras de Liquidez.1':'Aplicações Interfinanceiras de Liquidez_AtivoRealizávelALongoPrazo',
-            'Títulos e Valores Mobiliários':'Títulos e Valores Mobiliários_AtivoCirculante',
-            'Títulos e Valores Mobiliários.1':'Títulos e Valores Mobiliários_AtivoRealizávelALongoPrazo',
-            'Outras Obrigações':'Outras Obrigações_PassivoCirculante',
-            'Outras Obrigações.1':'Outras Obrigações_PassivoExigivelALongoPrazo',
-            'Relações Interdependências':'Relações Interdependências_AtivoCirculante',
-            'Relações Interdependências.1': 'Relações Interdependências_AtivoRealizávelALongoPrazo',
-            'Relações Interdependências.2':'Relações Interdependências_PassivoCirculante',
-            'Relações Interdependências.3':'Relações Interdependências_PassivoExigivelALongoPrazo',
-            'Relações Interfinanceiras':'Relações Interfinanceiras_AtivoCirculante',
-            'Relações Interfinanceiras.1':'Relações Interfinanceiras_AtivoRealizávelALongoPrazo',
-            'Relações Interfinanceiras.2':'Relações Interfinanceiras_PassivoCirculante',
-            'Relações Interfinanceiras.3':'Relações Interfinanceiras_PassivoExigivelALongoPrazo',
-            'Passivos sobre Ativos Não_Correntes a Venda e Descontinuados':'Passivos sobre Ativos Não_Correntes a Venda e Descontinuados_PassivoCirculante',
-            'Passivos sobre Ativos Não_Correntes a Venda e Descontinuados.1':'Passivos sobre Ativos Não_Correntes a Venda e Descontinuados_PassivoNãoCirculante',
-            'Operações de Crédito':'Operações de Crédito_AtivoCirculante',
-            'Operações de Crédito.1':'Operações de Crédito_AtivoRealizávelALongoPrazo',
-            'Captações no Mercado Aberto':'Captações no Mercado Aberto_PassivoCirculante',
-            'Captações no Mercado Aberto.1':'Captações no Mercado Aberto_PassivoExigivelALongoPrazo',
-            'Depósitos':'Depósitos_PassivoCirculante',
-            'Depósitos.1':'Depósitos_PassivoExigivelALongoPrazo',
-            'Obrigações por Empréstimos':'Obrigações por Empréstimos_PassivoCirculante',
-            'Obrigações por Empréstimos.1':'Obrigações por Empréstimos_PassivoExigivelALongoPrazo',
-            'Obrigações por Repasse do Exterior':'Obrigações por Repasse do Exterior_PassivoCirculante',
-            'Obrigações por Repasse do Exterior.1':'Obrigações por Repasse do Exterior_PassivoExigivelALongoPrazo',
-            'Operações de Arrendamento Mercantil':'Operações de Arrendamento Mercantil_AtivoCirculante',
-            'Operações de Arrendamento Mercantil.1':'Operações de Arrendamento Mercantil_AtivoRealizávelALongoPrazo',
-            'Obrigações por Repasse do País':'Obrigações por Repasse do País_PassivoCirculante',
-            'Obrigações por Repasse do País.1':'Obrigações por Repasse do País_PassivoExigivelALongoPrazo',
-            'Recursos de Aceites e Emissão de Títulos':'Recursos de Aceites e Emissão de Títulos_PassivoCirculante',
-            'Recursos de Aceites e Emissão de Títulos.1':'Recursos de Aceites e Emissão de Títulos_PassivoExigivelALongoPrazo',
-            'Outros Créditos':'Outros Créditos_AtivoCirculante',
-            'Outros Créditos.1':'Outros Créditos_AtivoRealizávelALongoPrazo',
-            'Outros Valores e Bens':'Outros Valores e Bens_AtivoCirculante',
-            'Outros Valores e Bens.1':'Outros Valores e Bens_AtivoRealizávelALongoPrazo'
-
-
-            
-
-
-        }
-
 
 
         
@@ -379,10 +312,7 @@ class Fundamentus():
                 except KeyError as e: 
                     pass
             
-            #Renomeando as colunas
-            if column in rename_columns.keys():
-                column = rename_columns.get(column) 
-            column = re.sub(r'\W+', '', column)
+            
 
             #Criando pasta para alocar nosso novo dataframe, com as colunas das empresas agrupadas
             if not os.path.exists(os.path.abspath('Fundamentus')+'\\Data_Categories'):
@@ -453,10 +383,7 @@ class Fundamentus():
                 except KeyError as e: 
                     pass
             
-            #Renomeando as colunas
-            if column in rename_columns.keys():
-                column = rename_columns.get(column) 
-            column = re.sub(r'\W+', '', column)
+           
 
             #Criando pasta para alocar nosso novo dataframe, com as colunas das empresas agrupadas
             if not os.path.exists(os.path.abspath('Fundamentus')+'\\Data_Categories'):
@@ -468,12 +395,14 @@ class Fundamentus():
     def __rename_columns(self):
         """
         Função para renomear as colunas dos Balanços das empresas, tendo em vista que os arquivos originais formatam os dados
-        de formas nada convencionais. Isso irá ajudar a entender e extrair os dados de uma maneira melhor
+        de formas nada convencionais. Isso irá ajudar a entender e extrair os dados de uma maneira melhor.
+        Motivo de não iterarmos pelos Resultados Demonstrativos é que esses arquivos não ficam com colunas repitidas quando fazemos as tranformações necessárias neles.
+
         """        
 
 
 
-
+        #Dicionário com os nomes atuais como chaves, e os nomes que queremos como valores
         rename_columns = {
 
             'Estoques':'Estoques_AtivoCirculante',
@@ -536,20 +465,33 @@ class Fundamentus():
 
         }
 
+        #Listando arquivos
         files = os.listdir('Fundamentus\Balanco')
+
+        #Iterando pelos arquivos
         for file in tqdm(files):
             df = pd.read_csv(f'Fundamentus\Balanco\{file}', index_col=0)
-            new_columns = []
-            for column in df.columns:
 
+            #Lista para armazenar novos nomes para as colunas, depois de armazenar todos, vamos substituir as colunas atuais com elas
+            new_columns = []
+
+            #Iterando pelas colunas do dataframe
+            for column in df.columns:
+                
+                #Pegando o novo nome para a coluna no dicionário, usando o nome atual como chave
                 if column in rename_columns.keys():
                     column = rename_columns.get(column) 
 
+                #Formatando o nome
                 column = re.sub(r'\W+', '', column)
-                new_columns.append(column)
 
+                #Adicionando a lista
+                new_columns.append(column)
+            
+            #Substituindo as colunas
             df.columns = new_columns
 
+            #Salvando o dataframe com nome das colunas alteradas
             df.to_csv(f'Fundamentus\Balanco\{file}')
 
     def get_events(self,ticker):
@@ -561,21 +503,30 @@ class Fundamentus():
         :rtype: pandas.DataFrame
         """        
         
-
+        #Url do site onde estão os eventos da empresa do pregão
         url = f"https://www.fundamentus.com.br/fatos_relevantes.php?papel={ticker}"
 
-    
+        #Configurando o agente pelo qual o Requests irá operar
         header = {
         "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.75 Safari/537.36",
         "X-Requested-With": "XMLHttpRequest"
         }
-    
+        
+        #Pegando a resposta em html
         r = requests.get(url, headers=header)
         
+        #Lendo o html com Pandas, transformando os dados em html em uma lista de dataframes
         dfs = pd.read_html(r.text,decimal=',', thousands='.')
+        
+        #Pegando os dados que importam
         df = dfs[0][['Data', 'Descrição']] 
+
+        #Configurando as datas dos eventos para serem índices do dataframe
         df.index = df['Data']
+
+        #Retirando a coluna de datas, já que esses dados estão no índice
         df = df.drop('Data', axis=1)
+
         return df
 
     def get_stock_info(self,ticker):
@@ -658,11 +609,13 @@ class Fundamentus():
         try: dfs = pd.read_html(r.text, decimal=',', thousands='.')
         except ValueError: pass
 
+        #Pega o DataFrame que queremos  
         df = dfs[0]
         
-
+        #Renomeia a data como Data Com, explicitando a informação
         df.rename({'Data':'Data Com'}, axis=1,inplace=True)
 
+        #Colocando as datas como índice
         df = df.set_index('Data Com', drop=True)
         return df
                 
@@ -768,7 +721,7 @@ if __name__ == '__main__':
     tickers_letters = [c[:4] for c in tickers]
     ticker_dict = dict(zip(tickers_letters,tickers))
     new_tickers = list(ticker_dict.values())'''
-    data = Fundamentus().get_dividends(ticker)
+    data = Fundamentus().get_events(ticker)
     print(data)
 
    
