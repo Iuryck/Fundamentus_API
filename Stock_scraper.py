@@ -311,7 +311,7 @@ class Fundamentus():
         :param tickers: Lista de código de ações (Ex: ABEV3)
         :type tickers: list
         """        
-
+        
         #Criando diretório para salvar as planilhas de balanço, caso não exista
         if not os.path.exists('Fundamentus\\Balanco'):
             os.mkdir('Fundamentus\\Balanco')
@@ -538,15 +538,15 @@ class Fundamentus():
                 #Pegando o pregão da empresa através do nome do arquivo
                 ticker = ticker[:ticker.find('.')]
 
-                    
-                if column not in ticker_df.columns: continue
-                    #Pegando a coluna de dados que queremos do arquivo, colocando em uma coluna nomeada pelo pregão
-                    ticker_df[ticker] = ticker_df[column]
-
-                    #Juntando a coluna que queremos ao nosso novo dataframe, indexado por data
-                    df = df.merge(ticker_df[ticker], left_on=df.index, right_on=ticker_df.index, how='left').set_index('key_0', drop=True)
                 
-            
+                if column not in ticker_df.columns: continue
+                #Pegando a coluna de dados que queremos do arquivo, colocando em uma coluna nomeada pelo pregão
+                ticker_df[ticker] = ticker_df[column]
+
+                #Juntando a coluna que queremos ao nosso novo dataframe, indexado por data
+                df = df.merge(ticker_df[ticker], left_on=df.index, right_on=ticker_df.index, how='left').set_index('key_0', drop=True)
+                
+               
             
 
             #Criando pasta para alocar nosso novo dataframe, com as colunas das empresas agrupadas
@@ -730,7 +730,7 @@ class Fundamentus():
             #Salvando o dataframe com nome das colunas alteradas
             df.to_csv(f'Fundamentus\Balanco\{file}')
 
-        
+
         rename_columns ={
             'Receita Bruta de Vendas e/ou Serviços': 'ReceitaBrutaDeVendasServiços',
             'Deduções da Receita Bruta': 'DeduçõesReceitaBruta',
@@ -757,9 +757,9 @@ class Fundamentus():
             'Part. de Acionistas Não Controladores': 'Part.AcionistasNãoControladores',
             'Lucro/Prejuízo do Período':'LucroPrejuízoDoPeríodo'
 
-
+            
         }
-                
+
         #Listando arquivos
         files = os.listdir('Fundamentus\Resultados_Demonstrativos')
 
@@ -769,38 +769,30 @@ class Fundamentus():
 
             #Lista para armazenar novos nomes para as colunas, depois de armazenar todos, vamos substituir as colunas atuais com elas
             new_columns = []
-                        
+
             #Iterando pelas colunas do dataframe
             for column in df.columns:
 
                 if column=='Unnamed':continue
-                    
+                
                 #Pegando o novo nome para a coluna no dicionário, usando o nome atual como chave
                 if column in rename_columns.keys():
                     column = rename_columns.get(column) 
-                        
+
                 #Formatando o nome
                 column = re.sub(r'\W+', '', column)
 
                 #Adicionando a lista
                 new_columns.append(column)
-                    
+            
             #Substituindo as colunas
             df.columns = new_columns
-                
+
             #Salvando o dataframe com nome das colunas alteradas
             df.to_csv(f'Fundamentus\Resultados_Demonstrativos\{file}')
 
 
 
-if __name__ == '__main__':
-
-    
-    tickers = list(Fundamentus().get_tickers()['Papel'])
-    tickers_letters = [c[:4] for c in tickers]
-    ticker_dict = dict(zip(tickers_letters,tickers))
-    new_tickers = list(ticker_dict.values())
-    data = Fundamentus().bulk_get_fundamentals(new_tickers)
 
 
 
