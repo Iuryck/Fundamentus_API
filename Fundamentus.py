@@ -792,27 +792,15 @@ class Fundamentus():
             df.to_csv(f'Fundamentus\Resultados_Demonstrativos\{file}')
 
 
-        print('____________________ UNZIPING FILES ____________________')
-        self.__unzip_fundamentals(tickers)
-        print('___________________ SEPARATING SHEETS __________________')
-        self.__separate_data(tickers)
-        print('___________________ RENAMING COLUMNS __________________')
-        self.__rename_columns()
-        print('___________________ SEPARATING COLUMNS __________________')
-        self.__separate_category(tickers)
 
 if __name__ == '__main__':
 
-    ticker = 'B3SA3'
     
-    '''tickers = list(Fundamentus().get_tickers()['Papel'])
+    tickers = list(Fundamentus().get_tickers()['Papel'])
     tickers_letters = [c[:4] for c in tickers]
     ticker_dict = dict(zip(tickers_letters,tickers))
-    new_tickers = list(ticker_dict.values())'''
-    data = Fundamentus().get_events(ticker)
-    print(data)
-
-   
+    new_tickers = list(ticker_dict.values())
+    data = Fundamentus().bulk_get_fundamentals(new_tickers)
 
 
 
