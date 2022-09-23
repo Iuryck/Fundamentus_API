@@ -1,16 +1,18 @@
 # Fundamentus Scrape
 
-Esse repositório serve para extrair dados da página brasileira de investimentos Fundamentus, através das bibliotecas Selenium e Requests. 
+This repository is for extracting data from the brazillian investments web page called Fundamentus. Uses Selenium and Requests to webscrape
+all data on the website
 
-Para extrair dados fundamentalistas históricos, que estão protegidos por captcha, usamos uma Rede Neural Convulacional, para ler os captchas e extrair os dados.
+To extract historical fundamentalist data (Profits, Gross Margin, etc) that are protected by captha, we use Convolutional Neural Networks to read the captcha images
+and return the text inside it
 
-# Uso
+# Usage
 
-## get_stock_info( ticker/pregão )
+## get_stock_info( ticker )
 
-Pega dados gerais da empresa, que são disponibilizados quando se busca um pregão no site.
+Gets general information of the company, that is displayed when searching for the ticker on the website.
 
-Exemplo:
+Example:
 
 ```
 data = Fundamentus().get_stock_info('B3SA3')
@@ -22,11 +24,11 @@ print(data)
 'LPA': '0.75', 'VPA': '3.58', 'Marg. Bruta': '89,8%', 'Marg. EBIT': '59,1%', 'Marg. Líquida': '44,8%', 'EBIT / Ativo': '11,9%', 'ROIC': '18,8%', 'ROE': '20,9%', 'Liquidez Corr': '1.67', 'Div Br/ Patrim': '0.62', 'Giro Ativos': '0.20', 'Ativo': '50737200000', 'Disponibilidades': '18569100000', 'Ativo Circulante': '19784000000', 'Dív. Bruta': '13476400000', 'Dív. Líquida': '-5092740000', 'Patrim. Líq': '21807200000'}
 ```
 
-## get_dividends( ticker/pregão )
+## get_dividends( ticker )
 
-Pega o histórico de dividendos de uma empresa, caso a empresa tenha um.
+Gets historical data on company dividends, in case the company has one.
 
-Exemplo:
+Example:
 
 ```
 data = Fundamentus().get_dividends('B3SA3')
@@ -49,11 +51,11 @@ Data Com
 [82 rows x 4 columns]
 ```
 
-## get_events( ticker/pregão )
+## get_events( ticker )
 
-Pega eventos importantes da empresa, disponibilizados no site fundamentos. Eventos como divulgação de resultados, mudanças na diretoria, reuniões, etc.
+Gets important company events displayed on the website. Events like change in directors, results presentation, meetings, etc.
 
-Exemplo
+Example
 
 ```
 data = Fundamentus().get_events('B3SA3')
@@ -78,10 +80,9 @@ Data
 [100 rows x 1 columns]
 ```
 
-## get_fundamentals( lista de pregões )
+## get_fundamentals( ticker list )
 
-Essa é a parte mais complexa do código, irá iterar pelos pregões e irá extrair dados fundamentalistas históricos das empresas. Pra isso é necessário usar o [NoCaptcha](https://github.com/Iuryck/CNN-Captcha-Reader) para ler e resolver os captchas que "protegem" os dados automaticamente, essa é a parte mais demorada do processo. Depois de extraídos os dados serão organizados dentro da pasta Fundamentus criado no diretório.
-
+This is the most complex part of the code, it will iterate through the tickers and extract their historical fundamentalist data. For that we must use [NoCaptcha](https://github.com/Iuryck/CNN-Captcha-Reader) to read and answer the captchas that "protect" the data, this is the longest part. After the data has been extracted, all of the data will be organized in the Fundamentus folder inside the directory.
 Exemplo
 
 ```
