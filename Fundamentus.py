@@ -1,26 +1,23 @@
 
-from selenium import webdriver
-
+import io
 import os
-import time
 import pandas as pd
 import requests
-import shutil
+from requests import Response
 from tqdm import tqdm
-
 import zipfile
-from zipfile import ZipFile
-
-
+from zipfile import BadZipFile, ZipFile
 import pandas as pd
 import datetime as dt
 import os
 import pandas as pd
 import xlrd
-from webdriver_manager.chrome import ChromeDriverManager
 import re
 import traceback
-from cv2 import error as cv2_error
+from requests_html import AsyncHTMLSession
+import warnings
+
+warnings.simplefilter(action='ignore', category=pd.errors.PerformanceWarning)
 
 
 
