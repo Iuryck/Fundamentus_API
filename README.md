@@ -80,12 +80,46 @@ Data
 [100 rows x 1 columns]
 ```
 
-## get_fundamentals( ticker list )
+## get_fundamentals( ticker )
 
-This is the most complex part of the code, it will iterate through the tickers and extract their historical fundamentalist data. For that we must use [NoCaptcha](https://github.com/Iuryck/CNN-Captcha-Reader) to read and answer the captchas that "protect" the data, this is the longest part. After the data has been extracted, all of the data will be organized in the Fundamentus folder inside the directory.
-Exemplo
+Collects Balance Sheets and Company Results historical data files from website's server.
+Uses requests Session to collect cookies from website, then uses cookies to make a GET request to the server and retrieve a Zip file encoded in Bytes
+
+Example
 
 ```
-Fundamentus().get_fundamentals(['B3SA3', 'TRPL4','ITSA4'])
+Fundamentus().get_fundamentals('B3SA3')
 
 ```
+
+To extract the zip file you need to use the following code:
+
+```
+#Raw response from server in bytes
+response = Fundamentus().get_fundamentals('B3SA3')
+
+#Zip file comes in bytes, we use BytesIO to decode the bytes into zip file
+try: z = ZipFile(io.BytesIO(response.content))
+
+#Zip file may be corrupted, always capture this exception
+except BadZipFile: ...
+
+```
+
+
+## bulk_get_fundamentals( list_of_tickers, force_download: bool *(Default False)* )
+
+Equal to **get_fundamentals** but with asynchronous requests, made for quick downloading of multiple data files. 
+
+Use *force_download = True* to redownload already downloaded files.
+
+Example
+
+```
+
+Fundamentus().bulk_get_fundamentals(['B3SA3','ITSA4','TRPL4'])
+
+```
+
+**NOTE:** This is just an example, you can easily and quickly download 500+ files with this function.
+
