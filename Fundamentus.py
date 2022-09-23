@@ -30,9 +30,10 @@ from cv2 import error as cv2_error
 class Fundamentus():
 
     def treat_exception(self, ticker, exception):
-        f = open(f'ERROR_LOG.txt', 'w')
+        f = open(f'CAPTCHA_ERROR_LOG.txt', 'w')
         f.write(ticker+'\n')
-        f.write(str(exception))
+        f.write(str(exception)+'\n')
+        f.write(str(exception.__class__)+'\n')
         f.write('\n_________________________________________________________\n')
         f.write(traceback.format_exc())
         f.close()
@@ -65,7 +66,247 @@ class Fundamentus():
         #Retornando        
         return df
 
-    def __separate_data(self,tickers):
+    def get_events(self,ticker):
+        """Pega eventos e acontecimentos de uma empresa listada no site Fundamentus
+
+        :param ticker: pregão da empresa que deseja pegar os eventos
+        :type ticker: string
+        :return: dataframe de eventos de uma empresa
+        :rtype: pandas.DataFrame
+        """        
+        
+        #Url do site onde estão os eventos da empresa do pregão
+        url = f"https://www.fundamentus.com.br/fatos_relevantes.php?papel={ticker}"
+
+        #Configurando o agente pelo qual o Requests irá operar
+        header = {
+        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.75 Safari/537.36",
+        "X-Requested-With": "XMLHttpRequest"
+        }
+        
+        #Pegando a resposta em html
+        r = requests.get(url, headers=header)
+        
+        #Lendo o html com Pandas, transformando os dados em html em uma lista de dataframes
+        dfs = pd.read_html(r.text,decimal=',', thousands='.')
+        
+        #Pegando os dados que importam
+        df = dfs[0][['Data', 'Descrição']] 
+
+        #Configurando as datas dos eventos para serem índices do dataframe
+        df.index = df['Data']
+
+        #Retirando a coluna de datas, já que esses dados estão no índice
+        df = df.drop('Data', axis=1)
+
+        return df
+
+    def get_stock_info(self,ticker):
+        """Pega informações gerais sobre uma empresa no site do Fundamentus através de requests.
+
+        :param ticker: pregão da empresa para pegar os dados
+        :type ticker: string
+        :return: dicionário com as informações
+        :rtype: dict
+        """        
+
+        url = f"https://www.fundamentus.com.br/detalhes.php?papel={ticker}"
+
+    
+        header = {
+        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.75 Safari/537.36",
+        "X-Requested-With": "XMLHttpRequest"
+        }
+    
+        r = requests.get(url, headers=header)
+        company_df = pd.DataFrame()
+        dfs = pd.read_html(r.text,decimal=',', thousands='.')
+        
+        
+        company_df = dfs[0].loc[:, 0:1].append(dfs[0].loc[:, 2:3].rename(columns={2:0,3:1}))
+        company_df.index = company_df.loc[:,0]
+        company_df.drop(0, axis=1, inplace=True)
+
+        df = dfs[1].loc[:, 0:1].append(dfs[1].loc[:, 2:3].rename(columns={2:0,3:1}))
+        df.index = df.loc[:,0]
+        df.drop(0, axis=1, inplace=True)
+        company_df = company_df.append(df)
+
+        
+        df = dfs[2].loc[1:, 2:3].rename(columns={2:0,3:1}).append(dfs[2].loc[1:, 4:5].rename(columns={4:0,5:1}))
+        df.index = df.loc[:,0]
+        df.drop(0, axis=1, inplace=True)
+        company_df = company_df.append(df)
+
+        df = dfs[3].loc[1:, 0:1].append(dfs[3].loc[1:, 2:3].rename(columns={2:0,3:1}))
+        df.index = df.loc[:,0]
+        df.drop(0, axis=1, inplace=True)
+        company_df = company_df.append(df)
+
+        
+
+        temp_dict = company_df.to_dict()[1]
+        dictionary = {}
+        for c in temp_dict.keys(): 
+            dictionary[str(c).replace('?','')] = temp_dict[c]
+            
+
+        return dictionary
+
+    def get_dividends(self, ticker):
+        """Pega informações sobre os dividendos de uma empresa através de requests, se ela tiver dividendos
+
+        :param tickers: lista de pregões
+        :type tickers: list
+        :raises ConnectionError: erro de conexão caso a página retorne erro 404
+        """        
+
+        
+
+        #A url que você quer acesssar
+        url = f"https://www.fundamentus.com.br/proventos.php?papel={ticker}"
+
+        #Informações para fingir ser um navegador
+        header = {
+        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.75 Safari/537.36",
+        "X-Requested-With": "XMLHttpRequest"
+        }
+        #Juntamos tudo com a requests
+        r = requests.get(url, headers=header)
+        
+        if r.status_code == 404:
+            raise ConnectionError('Failed to connect to website, check internet connection or if https://www.fundamentus.com.br/detalhes.php is a valid website')
+
+        #E finalmente usamos a função read_html do pandas
+        try: dfs = pd.read_html(r.text, decimal=',', thousands='.')
+        except ValueError: pass
+
+        #Pega o DataFrame que queremos  
+        df = dfs[0]
+        
+        #Renomeia a data como Data Com, explicitando a informação
+        df.rename({'Data':'Data Com'}, axis=1,inplace=True)
+
+        #Colocando as datas como índice
+        df = df.set_index('Data Com', drop=True)
+        return df
+
+    def get_fundamentals(ticker:str):
+
+        url = f'https://fundamentus.com.br/balancos.php?papel={ticker}&tipo=1'
+
+        #Request headers
+        header = {
+            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.75 Safari/537.36",
+            "X-Requested-With": "XMLHttpRequest",
+            
+            }
+
+        #Request session to collect cookies
+        with requests.Session() as s:
+
+            #Get ticker website with data zip file with async request
+            r = s.get(url, headers=header)
+
+            #Create referer header to get the right zip file
+            header.update({"Referer": f'{url}'})
+
+            #Gets cookie with session ID to be able to make request which retrieves zip file in bytes
+            cookie = {'PHPSESSID': requests.utils.dict_from_cookiejar(s.cookies)['PHPSESSID']}
+
+            #Request to collect ticker data zip file
+            r = s.get(f'https://fundamentus.com.br/planilhas.php?SID={cookie["PHPSESSID"]}', headers=header)
+
+        return r.content
+
+    def bulk_get_fundamentals(self,tickers:list[str], force_download:bool=False):
+        
+      
+
+        #Create folders to store the data
+        if not os.path.exists(os.path.abspath('Fundamentus')):
+            os.mkdir(os.path.abspath('Fundamentus'))
+
+        if not os.path.exists(os.path.abspath('Fundamentus')+'\Original'):
+            os.mkdir(os.path.abspath('Fundamentus')+'\Original')
+
+        
+        #List of archives already downloaded to skip in the loop. If force_download is true, creates empty list
+        if not force_download: success_list = [c[:c.find('.')] for c in os.listdir('Fundamentus\\Original') if '.xls' in c]
+        else : success_list=[]
+
+        
+
+        urls = [(f'https://fundamentus.com.br/balancos.php?papel={ticker}&tipo=1', ticker) for ticker in tickers if ticker not in success_list]
+       
+
+        tasks = (lambda url=url, ticker=ticker: self.__get_zip_request(url, ticker) for url, ticker in urls)
+        
+        
+        results = AsyncHTMLSession().run(*tasks)
+
+        #Iterating through tickers
+        for response, ticker in tqdm(results):   
+            
+
+            #Zip file comes in bytes, we use BytesIO to decode the bytes into zip file
+            try: z = ZipFile(io.BytesIO(response.content))
+
+            #If zip file is corrupted, skip
+            except BadZipFile: continue
+
+            #Extract zip content
+            z.extractall("Fundamentus\\Original")
+
+            #Gets the newly collected zip file in directory
+            filename = max([os.path.abspath('Fundamentus')+'\Original' + "\\" + f for f in os.listdir(os.path.abspath('Fundamentus\\Original'))],key=os.path.getctime)
+
+            #Tries to rename the newly collected file to the ticker name
+            try: os.rename(filename, os.path.abspath('Fundamentus')+f'\Original\\{ticker}.xls')
+
+            #If the ticker file name already exists, deletes the file, renames again
+            except FileExistsError:
+                
+                os.remove(os.path.abspath('Fundamentus')+f'\Original\\{ticker}.xls')
+                os.rename(filename, os.path.abspath('Fundamentus')+f'\Original\\{ticker}.xls')     
+            
+            
+
+
+
+        
+        print('___________________ SEPARATING SHEETS __________________')
+        self.__separate_data()
+        print('___________________ RENAMING COLUMNS __________________')
+        self.__rename_columns()
+
+    async def __get_zip_request(self,url:str, ticker:str)->tuple[Response, str]:
+
+        #Request headers
+        header = {
+            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.75 Safari/537.36",
+            "X-Requested-With": "XMLHttpRequest",
+            
+            }
+
+        #Request session to collect cookies
+        with AsyncHTMLSession() as s:
+
+            #Get ticker website with data zip file with async request
+            r = await s.get(url, headers=header)
+
+            #Create referer header to get the right zip file
+            header.update({"Referer": f'{url}'})
+
+            #Gets cookie with session ID to be able to make request which retrieves zip file in bytes
+            cookie = {'PHPSESSID': requests.utils.dict_from_cookiejar(s.cookies)['PHPSESSID']}
+
+            #Request to collect ticker data zip file
+            r = await s.get(f'https://fundamentus.com.br/planilhas.php?SID={cookie["PHPSESSID"]}', headers=header)
+
+        return r, ticker
+
+    def __separate_data(self):
         """Recebe uma lista de ações e separa, para cada ação, as 2 planilhas que vem nos arquivos dos balanços,
         uma planilha de balanços e outra planilha de demonstrativos. Também transforma as duas planilhas de forma
         que fique mais fácil de usar e ler os dados.
@@ -316,7 +557,7 @@ class Fundamentus():
                 os.mkdir(os.path.abspath('Fundamentus')+'\\Data_Categories')
 
             #Salvando nosso novo dataframe
-            df.to_csv(os.path.abspath('Fundamentus')+'\\Data_Categories\\'+column+'.csv')
+            df.to_csv(os.path.abspath('Fundamentus')+f'\\Data_Categories\\{column}.csv')
 
 
         '''Agora repetimos o mesmo processo para os Resultados Demonstrativos'''
@@ -387,7 +628,7 @@ class Fundamentus():
                 os.mkdir(os.path.abspath('Fundamentus')+'\\Data_Categories')
 
             #Salvando nosso novo dataframe
-            df.to_csv(os.path.abspath('Fundamentus')+'\\Data_Categories\\'+column+'.csv')
+            df.to_csv(os.path.abspath('Fundamentus')+f'\\Data_Categories\\{column}.csv')
 
     def __rename_columns(self):
         """
@@ -474,6 +715,7 @@ class Fundamentus():
 
             #Iterando pelas colunas do dataframe
             for column in df.columns:
+                if column=='Unnamed':continue
                 
                 #Pegando o novo nome para a coluna no dicionário, usando o nome atual como chave
                 if column in rename_columns.keys():
@@ -491,215 +733,67 @@ class Fundamentus():
             #Salvando o dataframe com nome das colunas alteradas
             df.to_csv(f'Fundamentus\Balanco\{file}')
 
-    def get_events(self,ticker):
-        """Pega eventos e acontecimentos de uma empresa listada no site Fundamentus
-
-        :param ticker: pregão da empresa que deseja pegar os eventos
-        :type ticker: string
-        :return: dataframe de eventos de uma empresa
-        :rtype: pandas.DataFrame
-        """        
         
-        #Url do site onde estão os eventos da empresa do pregão
-        url = f"https://www.fundamentus.com.br/fatos_relevantes.php?papel={ticker}"
+        rename_columns ={
+            'Receita Bruta de Vendas e/ou Serviços': 'ReceitaBrutaDeVendasServiços',
+            'Deduções da Receita Bruta': 'DeduçõesReceitaBruta',
+            'Receita Líquida de Vendas e/ou Serviços': 'ReceitaLíquidaDeVendasServiços',
+            'Custo de Bens e/ou Serviços Vendidos': 'CustoDeBensServiçosVendidos',
+            'Resultado Bruto': 'ResultadoBruto',
+            'Despesas Com Vendas': 'DespesasComVendas',
+            'Despesas Gerais e Administrativas': 'DespesasGeraisEAdministrativas',
+            'Perdas pela Não Recuperabilidade de Ativos': 'PerdasPelaNãoRecuperabilidadeAtivos',
+            'Outras Receitas Operacionais':'OutrasReceitasOperacionais',
+            'Outras Despesas Operacionais': 'OutrasDespesasOperacionais',
+            'Resultado da Equivalência Patrimonial': 'ResultadoDaEquivalênciaPatrimonial',
+            'Financeiras':'Financeiras',
+            'Receitas Financeiras': 'ReceitasFinanceiras',
+            'Despesas Financeiras':'DespesasFinanceiras',
+            'Resultado Não Operacional': 'ResultadoNãoOperacional',
+            'Receitas':'Receitas',
+            'Despesas':'Despesas',
+            'Resultado Antes Tributação/Participações': 'ResultadoAntesTributaçãoParticipações',
+            'Provisão para IR e Contribuição Social':'ProvisãoParaIRContribuiçãoSocial',
+            'IR Diferido':'IRDiferido',
+            'Participações/Contribuições Estatutárias':'ContribuiçõesEstatutárias',
+            'Reversão dos Juros sobre Capital Próprio': 'ReversãoJurosSobreCapitalPróprio',
+            'Part. de Acionistas Não Controladores': 'Part.AcionistasNãoControladores',
+            'Lucro/Prejuízo do Período':'LucroPrejuízoDoPeríodo'
 
-        #Configurando o agente pelo qual o Requests irá operar
-        header = {
-        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.75 Safari/537.36",
-        "X-Requested-With": "XMLHttpRequest"
+
         }
-        
-        #Pegando a resposta em html
-        r = requests.get(url, headers=header)
-        
-        #Lendo o html com Pandas, transformando os dados em html em uma lista de dataframes
-        dfs = pd.read_html(r.text,decimal=',', thousands='.')
-        
-        #Pegando os dados que importam
-        df = dfs[0][['Data', 'Descrição']] 
-
-        #Configurando as datas dos eventos para serem índices do dataframe
-        df.index = df['Data']
-
-        #Retirando a coluna de datas, já que esses dados estão no índice
-        df = df.drop('Data', axis=1)
-
-        return df
-
-    def get_stock_info(self,ticker):
-        """Pega informações gerais sobre uma empresa no site do Fundamentus através de requests.
-
-        :param ticker: pregão da empresa para pegar os dados
-        :type ticker: string
-        :return: dicionário com as informações
-        :rtype: dict
-        """        
-
-        url = f"https://www.fundamentus.com.br/detalhes.php?papel={ticker}"
-
-    
-        header = {
-        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.75 Safari/537.36",
-        "X-Requested-With": "XMLHttpRequest"
-        }
-    
-        r = requests.get(url, headers=header)
-        company_df = pd.DataFrame()
-        dfs = pd.read_html(r.text,decimal=',', thousands='.')
-        
-        
-        company_df = dfs[0].loc[:, 0:1].append(dfs[0].loc[:, 2:3].rename(columns={2:0,3:1}))
-        company_df.index = company_df.loc[:,0]
-        company_df.drop(0, axis=1, inplace=True)
-
-        df = dfs[1].loc[:, 0:1].append(dfs[1].loc[:, 2:3].rename(columns={2:0,3:1}))
-        df.index = df.loc[:,0]
-        df.drop(0, axis=1, inplace=True)
-        company_df = company_df.append(df)
-
-        
-        df = dfs[2].loc[1:, 2:3].rename(columns={2:0,3:1}).append(dfs[2].loc[1:, 4:5].rename(columns={4:0,5:1}))
-        df.index = df.loc[:,0]
-        df.drop(0, axis=1, inplace=True)
-        company_df = company_df.append(df)
-
-        df = dfs[3].loc[1:, 0:1].append(dfs[3].loc[1:, 2:3].rename(columns={2:0,3:1}))
-        df.index = df.loc[:,0]
-        df.drop(0, axis=1, inplace=True)
-        company_df = company_df.append(df)
-
-        
-
-        temp_dict = company_df.to_dict()[1]
-        dictionary = {}
-        for c in temp_dict.keys(): 
-            dictionary[str(c).replace('?','')] = temp_dict[c]
-            
-
-        return dictionary
-
-    def get_dividends(self, ticker):
-        """Pega informações sobre os dividendos de uma empresa através de requests, se ela tiver dividendos
-
-        :param tickers: lista de pregões
-        :type tickers: list
-        :raises ConnectionError: erro de conexão caso a página retorne erro 404
-        """        
-
-        
-
-        #A url que você quer acesssar
-        url = f"https://www.fundamentus.com.br/proventos.php?papel={ticker}"
-
-        #Informações para fingir ser um navegador
-        header = {
-        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.75 Safari/537.36",
-        "X-Requested-With": "XMLHttpRequest"
-        }
-        #Juntamos tudo com a requests
-        r = requests.get(url, headers=header)
-        
-        if r.status_code == 404:
-            raise ConnectionError('Failed to connect to website, check internet connection or if https://www.fundamentus.com.br/detalhes.php is a valid website')
-
-        #E finalmente usamos a função read_html do pandas
-        try: dfs = pd.read_html(r.text, decimal=',', thousands='.')
-        except ValueError: pass
-
-        #Pega o DataFrame que queremos  
-        df = dfs[0]
-        
-        #Renomeia a data como Data Com, explicitando a informação
-        df.rename({'Data':'Data Com'}, axis=1,inplace=True)
-
-        #Colocando as datas como índice
-        df = df.set_index('Data Com', drop=True)
-        return df
                 
-    def get_fundamentals(self,tickers):
-        from NoCaptcha.NoCaptcha import NoCaptchaGPU as NC
+        #Listando arquivos
+        files = os.listdir('Fundamentus\Resultados_Demonstrativos')
 
-        if not os.path.exists(os.path.abspath('Fundamentus')):
-            os.mkdir(os.path.abspath('Fundamentus'))
+        #Iterando pelos arquivos
+        for file in tqdm(files):
+            df = pd.read_csv(f'Fundamentus\Resultados_Demonstrativos\{file}', index_col=0)
 
-        if not os.path.exists(os.path.abspath('Fundamentus')+'\Original'):
-            os.mkdir(os.path.abspath('Fundamentus')+'\Original')
-
-        
-
-        options = webdriver.ChromeOptions()
-        prefs = {"download.default_directory" : os.path.abspath('Fundamentus')+'\Original'}
-        options.add_experimental_option("prefs",prefs)
-
-        driver = webdriver.Chrome(ChromeDriverManager().install() , options=options)
-        
-        success_list = [c[:c.find('.')] for c in os.listdir('Fundamentus\\Original') if '.zip' in c]
-
-        nc = NC()
-        nc.build()
-
-        for ticker in tqdm(tickers):
-            
-            if ticker in success_list: continue
-
-            def get_fund(ticker):
-                captcha=''
-                driver.get(f"https://fundamentus.com.br/balancos.php?papel={ticker}&tipo=1")
-
-                
-                with open('Fundamentus\\filename.png', 'wb') as file:
-                    file.write(driver.find_element_by_xpath("/html/body/div[1]/div[2]/form/img").screenshot_as_png)
-                
-
-                time.sleep(2)
-                captcha_input = driver.find_element_by_id("codigo_captcha")
-                try: 
-                    
-                    
-                    captcha, paths = nc.crack_captcha(os.path.abspath('Fundamentus')+'\\filename.png', save_data=True)
-                    
-
-                    captcha_input.send_keys(captcha)
-                    
-                except RuntimeError:
-                    captcha = 'failed'
-                    captcha_input.send_keys(captcha)
-
-                except cv2_error:
-                    captcha = 'failed'
-                    captcha_input.send_keys(captcha)
-                
-                
-                time.sleep(0.2)
-
-                driver.find_element_by_xpath("/html/body/div[1]/div[2]/form/input[4]").click()
-                time.sleep(1)
-                captcha_input = driver.find_element_by_id("codigo_captcha")
-                
-                if captcha_input.get_attribute('value') == captcha:
-                    filename = max([os.path.abspath('Fundamentus')+'\Original' + "\\" + f for f in os.listdir(os.path.abspath('Fundamentus\\Original'))],key=os.path.getctime)
-
-                    letters=[c for c in captcha]
-
-                    for i, letter in enumerate(letters):
-                        shutil.copy(paths[i], f'NoCaptcha\\Letters\\{letter}')
+            #Lista para armazenar novos nomes para as colunas, depois de armazenar todos, vamos substituir as colunas atuais com elas
+            new_columns = []
                         
+            #Iterando pelas colunas do dataframe
+            for column in df.columns:
 
+                if column=='Unnamed':continue
                     
-                    try: os.rename(filename, os.path.abspath('Fundamentus')+f'\Original\\{ticker}.zip')
-                    except FileExistsError as e:
+                #Pegando o novo nome para a coluna no dicionário, usando o nome atual como chave
+                if column in rename_columns.keys():
+                    column = rename_columns.get(column) 
                         
-                        os.remove(os.path.abspath('Fundamentus')+f'\Original\\{ticker}.zip')
-                        os.rename(filename, os.path.abspath('Fundamentus')+f'\Original\\{ticker}.zip')              
+                #Formatando o nome
+                column = re.sub(r'\W+', '', column)
 
+                #Adicionando a lista
+                new_columns.append(column)
                     
-                else: get_fund(ticker)
+            #Substituindo as colunas
+            df.columns = new_columns
                 
-            try: get_fund(ticker)
-            except Exception as e: self.treat_exception(ticker, e)
-            os.remove('Fundamentus\\filename.png')
+            #Salvando o dataframe com nome das colunas alteradas
+            df.to_csv(f'Fundamentus\Resultados_Demonstrativos\{file}')
 
-        driver.close()
 
         print('____________________ UNZIPING FILES ____________________')
         self.__unzip_fundamentals(tickers)
