@@ -300,17 +300,14 @@ class Fundamentus():
                 #Pegando o pregão da empresa através do nome do arquivo
                 ticker = ticker[:ticker.find('.')]
 
-                try:
                     
+                if column not in ticker_df.columns: continue
                     #Pegando a coluna de dados que queremos do arquivo, colocando em uma coluna nomeada pelo pregão
                     ticker_df[ticker] = ticker_df[column]
 
                     #Juntando a coluna que queremos ao nosso novo dataframe, indexado por data
                     df = df.merge(ticker_df[ticker], left_on=df.index, right_on=ticker_df.index, how='left').set_index('key_0', drop=True)
                 
-                #Caso a coluna não existe nos dados, segue para o próximo
-                except KeyError as e: 
-                    pass
             
             
 
