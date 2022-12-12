@@ -1,0 +1,22 @@
+version: "3.7"
+
+services: 
+
+  stock_scraper_api:
+    build: .
+    container_name: stock_scraper_api
+    restart: always
+    expose: 
+     - 8080
+
+  nginx:
+    build: ./nginx
+    container_name: nginx
+    restart: always
+    ports:
+      - "80:80" 
+
+
+    
+
+
