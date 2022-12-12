@@ -13,7 +13,7 @@ fundamentus = Fundamentus()
 
 @app.route('/', methods=['GET'])
 def test_api() -> dict:
-    return {'status': 'API is up!'}
+    return {"status": "API is up!"}
 
 @app.route('/events/<ticker>', methods=['GET'])
 def get_events(ticker:str) -> dict:
