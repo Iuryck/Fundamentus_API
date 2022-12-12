@@ -1,9 +1,12 @@
-FROM python:3.8.8
+FROM python:3.9.12
+
 ENV PYTHONUNBUFFERED 1
 
-WORKDIR /Fundamentus_scrape
-COPY requirements.txt .
+WORKDIR /app
+ADD . /app
+
 RUN pip install -r requirements.txt
-RUN git clone https://github.com/Iuryck/CNN-Captcha-Reader.git /Fundamentus_scrape/NoCaptcha
-RUN git clone https://github.com/Iuryck/Fundamentus_Scrape.git
-COPY . .
+
+EXPOSE 5000
+
+CMD [ "python","main.py","&" ]
