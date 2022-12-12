@@ -347,7 +347,7 @@ class Fundamentus():
             
         return r.content
 
-    def bulk_get_fundamentals(self,tickers:list[str], force_download:bool=False):
+    def bulk_get_fundamentals(self,tickers:list[str], force_download:bool=False)->list[tuple[pd.DataFrame, str]]:
         """Function to get various Zip files with fundamentalist data from various companies quickly and efficiently. Uses
         AsyncHTML to do requests to various pages simultaneously, then iterates and extracts the Zip files for each ticker.
 
@@ -457,7 +457,7 @@ class Fundamentus():
 
         return dataframes
 
-    def bulk_get_stock_info(self, tickers:list[str]):
+    def bulk_get_stock_info(self, tickers:list[str])->list[tuple[pd.DataFrame, str]]:
         """Function to get various dataframes with general info from various companies quickly and efficiently. Uses
         AsyncHTML to do requests to various pages simultaneously, then iterates and extracts the dataframes for each ticker.
 
@@ -650,7 +650,7 @@ class Fundamentus():
 
         return dataframes
 
-    def bulk_get_events(self, tickers:list[str]):
+    def bulk_get_events(self, tickers:list[str])->list[tuple[pd.DataFrame, str]]:
         """Function to get various dataframes with company events from various companies quickly and efficiently. Uses
         AsyncHTML to do requests to various pages simultaneously, then iterates and extracts the dataframes for each ticker.
 
