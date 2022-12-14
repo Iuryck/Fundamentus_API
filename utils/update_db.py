@@ -74,7 +74,7 @@ class Update_Fundamentus:
             #Creates threads to upload tables with the new_events_table function
             threads = self.create_upload_threads(self.db.new_events_table, new_tables)
 
-            with ThreadPoolExecutor(max_workers=100) as executor:
+            with ThreadPoolExecutor(max_workers=3) as executor:
                 
                 #Runs all upload tasks
                 for thread in threads:
@@ -95,7 +95,7 @@ class Update_Fundamentus:
             #Creates threads to update tables with the insert_row_events function
             threads = self.create_upload_threads(self.db.insert_row_events, update_tables)
 
-            with ThreadPoolExecutor(max_workers=100) as executor:
+            with ThreadPoolExecutor(max_workers=3) as executor:
                 
                 #Runs all update tasks
                 for thread in threads:
@@ -135,7 +135,7 @@ class Update_Fundamentus:
             #Creates threads to upload tables with the new_info_table function
             threads = self.create_upload_threads(self.db.new_info_table, new_tables)
 
-            with ThreadPoolExecutor(max_workers=100) as executor:
+            with ThreadPoolExecutor(max_workers=3) as executor:
                 
                 #Runs all upload tasks
                 for thread in threads:
@@ -156,7 +156,7 @@ class Update_Fundamentus:
             #Creates threads to update tables with the insert_row_info function
             threads = self.create_upload_threads(self.db.insert_row_info, update_tables)
 
-            with ThreadPoolExecutor(max_workers=100) as executor:
+            with ThreadPoolExecutor(max_workers=3) as executor:
                 
                 #Runs all upload tasks
                 for thread in threads:
@@ -207,7 +207,7 @@ class Update_Fundamentus:
             #Create upload threads with new_balancesheets_table function
             threads = self.create_upload_threads(self.db.new_balancesheets_table, balance_sheets)
 
-            with ThreadPoolExecutor(max_workers=100) as executor:
+            with ThreadPoolExecutor(max_workers=3) as executor:
                 
                 #Runs all upload tasks
                 for thread in threads:
@@ -234,7 +234,7 @@ class Update_Fundamentus:
             #Create updating threads with insert_row_results function
             threads = self.create_upload_threads(self.db.insert_row_balancesheets, balance_sheets)
 
-            with ThreadPoolExecutor(max_workers=100) as executor:
+            with ThreadPoolExecutor(max_workers=3) as executor:
                 
                 #Runs all upload tasks
                 for thread in threads:
@@ -285,7 +285,7 @@ class Update_Fundamentus:
             #Create upload threads with new_results_table function
             threads = self.create_upload_threads(self.db.new_results_table, results_sheets)
 
-            with ThreadPoolExecutor(max_workers=100) as executor:
+            with ThreadPoolExecutor(max_workers=3) as executor:
                 
                 #Runs all upload tasks
                 for thread in threads:
@@ -313,7 +313,7 @@ class Update_Fundamentus:
             #Create updating threads with insert_row_results function
             threads = self.create_upload_threads(self.db.insert_row_results, results_sheets)
 
-            with ThreadPoolExecutor(max_workers=100) as executor:
+            with ThreadPoolExecutor(max_workers=3) as executor:
                 
                 #Runs all update tasks
                 for thread in threads:
