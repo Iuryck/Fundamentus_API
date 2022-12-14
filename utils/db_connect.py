@@ -164,7 +164,7 @@ class Fundamentus_DB():
         #Get connection and cursor to execute the insert
         conn = engine.raw_connection()
         cur = conn.cursor()
-        cur.execute('ROLLBACK')
+       
         
 
         #IO class to read the dataframe in a string and transfer to DB
