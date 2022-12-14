@@ -495,10 +495,16 @@ class Fundamentus():
             with all the data we want
             '''
 
+            #Sometimes page doesn't load properly and gives wrong webpage, rendering error
+            if len(dfs)==1:continue
+
             #Formatting first dataframe and passing to main dataframe
-            company_df = pd.concat([dfs[0].loc[:, 0:1],dfs[0].loc[:, 2:3].rename(columns={2:0,3:1})])
+            
+            company_df = pd.concat([dfs[0].loc[:, 0:1],dfs[0].loc[:, 2:3].rename(columns={2:0,3:1})])            
             company_df.index = company_df.loc[:,0]
             company_df.drop(0, axis=1, inplace=True)
+        
+                
 
             #Formatting second dataframe and concatenating to main dataframe
             if len(dfs)>1:
