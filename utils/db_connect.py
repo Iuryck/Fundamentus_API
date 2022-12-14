@@ -686,7 +686,7 @@ class Fundamentus_DB():
                 #If failed assertion, raise assertion error
                 except AssertionError: raise AssertionError(f'{column} | {df[column].dtypes} | {df[column].values} | Is NaN: {df[column].values[0] is None}')
 
-    def __query(self, query:str, database:str)->list:
+    def query(self, query:str, database:str)->list:
         """Function to run queries in the databases
 
         :param query: query to be executed
@@ -715,22 +715,22 @@ class Fundamentus_DB():
         return results
        
     def get_balance_tables(self):
-        tables = self.__query("SELECT * FROM information_schema.tables WHERE table_schema = 'public';", 'fundamentus_balancesheets')
+        tables = self.query("SELECT * FROM information_schema.tables WHERE table_schema = 'public';", 'fundamentus_balancesheets')
         tables = [c[2] for c in tables]
         return tables
 
     def get_results_tables(self):
-        tables = self.__query("SELECT * FROM information_schema.tables WHERE table_schema = 'public';", 'fundamentus_results')
+        tables = self.query("SELECT * FROM information_schema.tables WHERE table_schema = 'public';", 'fundamentus_results')
         tables = [c[2] for c in tables]
         return tables
 
     def get_info_tables(self):
-        tables = self.__query("SELECT * FROM information_schema.tables WHERE table_schema = 'public';", 'fundamentus_company_info')
+        tables = self.query("SELECT * FROM information_schema.tables WHERE table_schema = 'public';", 'fundamentus_company_info')
         tables = [c[2] for c in tables]
         return tables
 
     def get_events_tables(self):
-        tables = self.__query("SELECT * FROM information_schema.tables WHERE table_schema = 'public';", 'fundamentus_events')
+        tables = self.query("SELECT * FROM information_schema.tables WHERE table_schema = 'public';", 'fundamentus_events')
         tables = [c[2] for c in tables]
         return tables
 
