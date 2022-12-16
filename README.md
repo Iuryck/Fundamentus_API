@@ -8,17 +8,17 @@ This repository is for extracting data from the brazillian investments web page 
 
 [API Usage](#api-usage)
 
- - [General Stock Information](#general-stock-information-info)
- - [Dividends Data](#stock-dividends-data-dividends)
+ - [General Stock Information](#general-stock-information-infoticker)
+ - [Dividends Data](#stock-dividends-data-dividendsticker)
  - [Company Events](#company-events-eventsticker)
  - [Results and Balance Sheets](#historical-results-and-balance-sheets-fundamentalsticker)
 
 
 [Code Usage](#code-usage)
- - [General Stock Information](#get_stock_info-ticker)
- - [Dividends Data](#get_dividends-ticker)
- - [Company Events](#get_events-ticker)
- - [Results and Balance Sheets](#get_fundamentals-ticker)
+ - [General Stock Information](#get_stock_info-ticker-)
+ - [Dividends Data](#get_dividends-ticker-)
+ - [Company Events](#get_events-ticker-)
+ - [Results and Balance Sheets](#get_fundamentals-ticker-)
  - [Async/Bulk Collecting Functions](#bulk-functions)
 
 # 
