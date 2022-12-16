@@ -1,6 +1,7 @@
 # Fundamentus Scrape API
 
-[![Website status](https://img.shields.io/website-up-down-green-red/https/fundamentus-sc-prod-stock-scraper-api-n6ugqu.mo2.mogenius.io.svg?label=Website%20status)](https://fundamentus-sc-prod-stock-scraper-api-n6ugqu.mo2.mogenius.io)
+[![Website status](https://img.shields.io/website-up-down-green-red/https/fundamentus-sc-prod-stock-scraper-api-n6ugqu.mo2.mogenius.io.svg?label=Website%20status)](https://fundamentus-sc-prod-stock-scraper-api-n6ugqu.mo2.mogenius.io)[![GitHub Build](https://github.com/Iuryck/Fundamentus_API/actions/workflows/docker-image.yml/badge.svg)](https://github.com/Iuryck/Fundamentus_API/actions)
+
 
 This repository is for extracting data from the brazillian investments web page called Fundamentus. Uses BeautifulSoup and Requests to webscrape the website for data. Data can then be delivered through a Flask API.
 
