@@ -1,6 +1,7 @@
 # Fundamentus Scrape API
 
-[![Website status](https://img.shields.io/website-up-down-green-red/https/fundamentus-sc-prod-stock-scraper-api-n6ugqu.mo2.mogenius.io.svg?label=Website%20status)](https://fundamentus-sc-prod-stock-scraper-api-n6ugqu.mo2.mogenius.io)
+[![Website status](https://img.shields.io/website-up-down-green-red/https/fundamentus-sc-prod-stock-scraper-api-n6ugqu.mo2.mogenius.io.svg?label=Website%20status)](https://fundamentus-sc-prod-stock-scraper-api-n6ugqu.mo2.mogenius.io)[![GitHub Build](https://github.com/Iuryck/Fundamentus_API/actions/workflows/docker-image.yml/badge.svg)](https://github.com/Iuryck/Fundamentus_API/actions)
+
 
 This repository is for extracting data from the brazillian investments web page called Fundamentus. Uses BeautifulSoup and Requests to webscrape the website for data. Data can then be delivered through a Flask API.
 
@@ -8,17 +9,17 @@ This repository is for extracting data from the brazillian investments web page 
 
 [API Usage](#api-usage)
 
- - [General Stock Information](#general-stock-information-info)
- - [Dividends Data](#stock-dividends-data-dividends)
+ - [General Stock Information](#general-stock-information-infoticker)
+ - [Dividends Data](#stock-dividends-data-dividendsticker)
  - [Company Events](#company-events-eventsticker)
  - [Results and Balance Sheets](#historical-results-and-balance-sheets-fundamentalsticker)
 
 
 [Code Usage](#code-usage)
- - [General Stock Information](#get_stock_info-ticker)
- - [Dividends Data](#get_dividends-ticker)
- - [Company Events](#get_events-ticker)
- - [Results and Balance Sheets](#get_fundamentals-ticker)
+ - [General Stock Information](#get_stock_info-ticker-)
+ - [Dividends Data](#get_dividends-ticker-)
+ - [Company Events](#get_events-ticker-)
+ - [Results and Balance Sheets](#get_fundamentals-ticker-)
  - [Async/Bulk Collecting Functions](#bulk-functions)
 
 # 
