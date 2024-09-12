@@ -828,22 +828,28 @@ class Fundamentus():
             #Salvando as variáveis da planilha que são usados como índice para usarmos como coluna na planilha final
             columns = balance.transpose().iloc[0 , :].dropna().values
 
-            #Virando a planilha para que podemos usar as datas como índice e variáveis como colunas, sem linhas desnecessárias -> [0,0]
-            balance = balance.transpose().iloc[1:,1:]
+            try: 
+                [float(c) for c in columns[1:]]
+                pass
+            except ValueError as e:
+                
 
-            #Garantindo que o índice seja salvo como uma variável de Datetime, visto que são datas
-            balance.index = [dt.datetime.strptime(c, '%d/%m/%Y') for c in index]
+                #Virando a planilha para que podemos usar as datas como índice e variáveis como colunas, sem linhas desnecessárias -> [0,0]
+                balance = balance.transpose().iloc[1:,1:]
 
-            #Ordenando índice por data
-            balance.sort_index(inplace=True)
+                #Garantindo que o índice seja salvo como uma variável de Datetime, visto que são datas
+                balance.index = [dt.datetime.strptime(c, '%d/%m/%Y') for c in index]
 
-            #Colocando o nome das colunas que salvamos antes
-            balance.columns = columns
+                #Ordenando índice por data
+                balance.sort_index(inplace=True)
 
-            
-            
-            
-            balance.to_csv(f'Fundamentus\\Balanco\\{ticker}.csv')
+                #Colocando o nome das colunas que salvamos antes
+                balance.columns = columns
+
+                
+                
+                
+                balance.to_csv(f'Fundamentus\\Balanco\\{ticker}.csv')
 
             #______________________________ Tratando Demonstrativos ______________________________#
 
