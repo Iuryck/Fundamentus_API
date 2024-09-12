@@ -11,6 +11,8 @@ import datetime as dt
 import os
 import pandas as pd
 import xlrd
+import asyncio
+import aiohttp
 import re
 import traceback
 from requests_html import AsyncHTMLSession
@@ -386,7 +388,7 @@ class Fundamentus():
             
 
             #Zip file comes in bytes, we use BytesIO to decode the bytes into zip file
-            try: z = ZipFile(io.BytesIO(response.content))
+            try: z = ZipFile(io.BytesIO(response))
 
             #If zip file is corrupted, skip
             except BadZipFile: continue
@@ -438,7 +440,7 @@ class Fundamentus():
         for r, ticker in results:
             
             #Reading in the HTML code to pandas dataframe
-            try: dfs = pd.read_html(r.text, decimal=',', thousands='.')
+            try: dfs = pd.read_html(r, decimal=',', thousands='.')
 
             #Tickers that don't have dividends won't have any tables, thus raising ValueError from pandas
             except ValueError: continue
@@ -486,7 +488,7 @@ class Fundamentus():
             company_df = pd.DataFrame()
 
             #Reading HTML code to pandas dataframes, returns list of dataframes
-            dfs = pd.read_html(r.text,decimal=',', thousands='.')
+            dfs = pd.read_html(r,decimal=',', thousands='.')
 
 
             '''
@@ -683,7 +685,7 @@ class Fundamentus():
 
             #Reading HTML with pandas to retrieve list of dataframes in webpage
             try: 
-                dfs = pd.read_html(r.text,decimal=',', thousands='.')
+                dfs = pd.read_html(r,decimal=',', thousands='.')
                 
                 #Getting the dataframe we want
                 df = dfs[0][['Data', 'Descrição']] 
@@ -726,20 +728,24 @@ class Fundamentus():
             
             }
 
+        
         #Request session to collect cookies
-        with AsyncHTMLSession() as s:
+        async with aiohttp.ClientSession(headers=header, cookie_jar=aiohttp.CookieJar()) as session:
 
             #Get ticker website that has the data zip file with async request
-            r = await s.get(url, headers=header)
+            r = await session.get(url)
 
             #Create referer header to get the right zip file for the right ticker
             header.update({"Referer": f'{url}'})
 
             #Gets cookie with session ID to be able to make request which retrieves zip file in bytes
-            cookie = {'PHPSESSID': requests.utils.dict_from_cookiejar(s.cookies)['PHPSESSID']}
+            cookies = session.cookie_jar.filter_cookies(url)
+            
+            cookie = {'PHPSESSID': cookies['PHPSESSID'].value}
 
             #Request to collect ticker data zip file
-            r = await s.get(f'https://fundamentus.com.br/planilhas.php?SID={cookie["PHPSESSID"]}', headers=header)
+            r = await session.get(f'https://fundamentus.com.br/planilhas.php?SID={cookie["PHPSESSID"]}', headers=header)
+            r = await r.content.read()
 
         return r, ticker# also returns ticker to keep track of which zip file is from which ticker
 
@@ -762,10 +768,13 @@ class Fundamentus():
             }
 
         #Request session to collect cookies
-        with AsyncHTMLSession() as s:
-
+        async with aiohttp.ClientSession(headers=header) as session:
+          
+                
             #Get ticker website that contains data with async request
-            r = await s.get(url, headers=header)
+            r = await session.get(url)
+            r = await r.text()
+            
 
         return r, ticker# also returns ticker to keep track of which data is from which ticker
 
